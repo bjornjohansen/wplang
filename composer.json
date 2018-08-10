@@ -1,0 +1,24 @@
+{
+    "name": "bjornjohansen/wplang",
+    "description": "Composer plugin to download translation files from wordpress.org",
+    "version": "0.1.0",
+    "license": "GPL-2.0+",
+    "type": "composer-plugin",
+    "authors": [
+        {
+            "name": "Bjørn Johansen",
+            "email": "post@bjornjohansen.no"
+        }
+    ],
+    "require": {
+        "composer-plugin-api": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "BJ\\Wplang\\": "src"
+        }
+    },
+    "extra": {
+        "class": "BJ\\Wplang\\Wplang"
+    }
+}
