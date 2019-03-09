@@ -77,7 +77,7 @@ class Wplang implements PluginInterface, EventSubscriberInterface {
 	 * @param  PackageEvent $event The package event object.
 	 */
 	public function onPackageAction( PackageEvent $event ) {
-		$package = $event->getOperation()->getPackage();
+		$package = $event->getOperation()->getTargetPackage();
 		$this->getTranslations( $package );
 	}
 
