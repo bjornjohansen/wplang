@@ -77,7 +77,7 @@ class Wplang implements PluginInterface, EventSubscriberInterface {
 	 * @param  PackageEvent $event The package event object.
 	 */
 	public function onPackageAction( PackageEvent $event ) {
-        if ($event->getOperation()->getJobType() == 'update') {
+        if ( 'update' === $event->getOperation()->getJobType() ) {
             $package = $event->getOperation()->getTargetPackage();
         } else {
             $package = $event->getOperation()->getPackage();
