@@ -60,7 +60,7 @@ class Translatable {
 	 * @param string $type          The package type: 'plugin', 'theme' or 'core'.
 	 * @param string $slug          The plugin/theme slug, E.g. 'query-monitor'. In case of core, this is 'wordpress'.
 	 * @param string $version       The package version.
-	 * @param string $languages     Array of the languages we are using.
+	 * @param array $languages     Array of the languages we are using.
 	 * @param string $wpLanguageDir Full path to the language files target directory.
 	 */
 	public function __construct( $type, $slug, $version, $languages, $wpLanguageDir ) {
