@@ -100,14 +100,14 @@ class Translatable {
 				break;
 
 			default:
-				throw new \Exception( 'Unknown package type' );
+				throw new \Exception( sprintf('Unknown package type "%s"', $this->type) );
 		}
 
 		$body = file_get_contents( $url );
 		$res = json_decode( $body );
 
 		if ( ! isset( $res->translations ) || empty( $res->translations ) ) {
-			throw new \Exception( 'No translations found' );
+			throw new \Exception( sprintf('No translations found for %s', $this->slug) );
 		}
 
 		$translations = [];

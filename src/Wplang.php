@@ -137,7 +137,7 @@ class Wplang implements PluginInterface, EventSubscriberInterface {
 				}
 			}
 		} catch ( \Exception $e ) {
-			$this->io->writeError( $e->getMessage() );
+			$this->io->writeError( '      - ' . $e->getMessage() );
 		}
 
 	}
