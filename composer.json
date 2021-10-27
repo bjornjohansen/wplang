@@ -1,7 +1,6 @@
 {
     "name": "bjornjohansen/wplang",
     "description": "Composer plugin to download translation files from wordpress.org",
-    "version": "0.1.1",
     "license": "GPL-2.0+",
     "type": "composer-plugin",
     "authors": [
