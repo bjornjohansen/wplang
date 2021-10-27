@@ -10,6 +10,8 @@ First run:
 composer require bjornjohansen/wplang
 ```
 
+**Note**: If you running Composer v1, make sure to require a version less than `0.2.0`.
+
 Then you’ll have to edit your `composer.json` file. You need to add the following section:
 ```
 "extra": {
