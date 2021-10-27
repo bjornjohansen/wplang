@@ -3,7 +3,7 @@
 namespace BJ\Wplang;
 
 use Composer\Composer;
-use Composer\Script\Event;
+use Composer\DependencyResolver\Operation\UpdateOperation;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
@@ -50,10 +50,19 @@ class Wplang implements PluginInterface, EventSubscriberInterface {
 		}
 
 		if ( ! empty( $extra['wordpress-language-dir'] ) ) {
-			$this->wpLanguageDir = dirname( dirname( dirname( dirname( __DIR__ ) ) ) ) . '/' . $extra['wordpress-language-dir'];
+			$this->wpLanguageDir = dirname( __DIR__, 4 ) . '/' . $extra['wordpress-language-dir'];
 		}
 	}
 
+    public function deactivate(Composer $composer, IOInterface $io)
+    {
+        // do nothing
+    }
+
+    public function uninstall(Composer $composer, IOInterface $io)
+    {
+        // do nothing
+    }
 
 	/**
 	 * Subscribe to Composer events.
@@ -77,7 +86,7 @@ class Wplang implements PluginInterface, EventSubscriberInterface {
 	 * @param  PackageEvent $event The package event object.
 	 */
 	public function onPackageAction( PackageEvent $event ) {
-        if ( 'update' === $event->getOperation()->getJobType() ) {
+        if ($event->getOperation() instanceof UpdateOperation) {
             $package = $event->getOperation()->getTargetPackage();
         } else {
             $package = $event->getOperation()->getPackage();
@@ -128,7 +137,7 @@ class Wplang implements PluginInterface, EventSubscriberInterface {
 				}
 			}
 		} catch ( \Exception $e ) {
-			$this->io->writeError( $e->getMessage() );
+			$this->io->writeError( '      - ' . $e->getMessage() );
 		}
 
 	}
