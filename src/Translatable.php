@@ -130,8 +130,8 @@ class Translatable {
 
 		$results = [];
 
-		foreach ( $this->languages as $language ) {
-			$result = $this->installTranslation( $this->translations[ $language ][0]->package );
+		foreach ( $this->translations as $language => $translation ) {
+			$result = $this->installTranslation( $translation[0]->package );
 
 			if ( $result ) {
 				$results[] = $language;
