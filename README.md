@@ -20,7 +20,7 @@ Then you’ll have to edit your `composer.json` file. You need to add the follow
 }
 ```
 
-You should propbably want to customize these values to suit your needs.
+You should probably want to customize these values to suit your needs.
 
 Finally run:
 ```
