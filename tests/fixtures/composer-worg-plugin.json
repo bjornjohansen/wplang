@@ -1,0 +1,10 @@
+{
+  "require": {
+    "wpackagist-plugin/classic-editor": "*"
+  },
+  "extra": {
+    "wordpress-languages": [
+      "en_GB"
+    ]
+  }
+}

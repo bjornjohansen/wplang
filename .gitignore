@@ -1,5 +1,6 @@
 composer.phar
 /vendor/
+.idea
 
 .cache/
 !.cache/.gitkeep
