@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<ruleset name="WpLang">
+    <description>WpLang Coding Standards</description>
+
+    <!-- PHPCS arguments: -->
+    <arg value="ps"/>
+    <arg name="colors"/>
+    <arg name="parallel" value="20"/>
+    <arg name="extensions" value="php"/>
+
+    <!-- Set files and paths: -->
+    <file>src/</file>
+
+    <!-- Whenever possible, cache the scan results and re-use those for unchanged files on the next scan. -->
+    <arg name="cache" value=".cache/phpcs.json"/>
+
+    <!-- Rules: -->
+    <rule ref="WordPress">
+        <exclude name="WordPress.NamingConventions"/>
+        <exclude name="WordPress.WP"/>
+        <exclude name="WordPress.Security"/>
+        <exclude name="WordPress.DB"/>
+        <exclude name="WordPress.DateTime"/>
+        <exclude name="WordPress.Files"/>
+    <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+    </rule>
+
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+
+    <rule ref="Generic.Formatting.MultipleStatementAlignment">
+        <type>error</type>
+    </rule>
+
+    <rule ref="Generic.CodeAnalysis.AssignmentInCondition">
+        <type>error</type>
+    </rule>
+
+    <rule ref="Universal.Operators.StrictComparisons">
+        <type>error</type>
+    </rule>
+
+    <rule ref="WordPress.PHP.StrictInArray">
+        <type>error</type>
+    </rule>
+
+    <rule ref="Squiz.NamingConventions.ValidVariableName"/>
+
+    <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
+        <type>error</type>
+        <message>Method name "%s" must not be prefixed with an underscore to indicate visibility</message>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Namespaces"/>
+    <rule ref="SlevomatCodingStandard.Classes"/>
+    <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
+        <properties>
+            <property name="rootNamespaces" type="array">
+                <element key="src" value="BJ\WPlang"/>
+            </property>
+        </properties>
+    </rule>
+</ruleset>
