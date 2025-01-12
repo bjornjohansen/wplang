@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress PHP Compatibility">
+    <description>Apply PHP compatibility checks</description>
+
+    <!-- PHPCS arguments: -->
+    <arg value="ps"/>
+    <arg name="colors"/>
+    <arg name="parallel" value="20"/>
+    <arg name="extensions" value="php"/>
+
+    <!-- Set files and paths: -->
+    <file>src/</file>
+
+    <!-- Whenever possible, cache the scan results and re-use those for unchanged files on the next scan. -->
+    <arg name="cache" value=".cache/phpcompat.json"/>
+
+    <!--  Set Up the Ruleset  -->
+    <rule ref="PHPCompatibility"/>
+
+    <!-- WordPress Core currently supports PHP 7.2+. -->
+    <config name="testVersion" value="7.2-"/>
+</ruleset>
