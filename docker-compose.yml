@@ -1,0 +1,45 @@
+services:
+  tests:
+    build:
+      target: tests
+    volumes:
+      - ./src:/app/wplang/src
+      - ./composer.json:/app/wplang/composer.json
+      - ./tests:/app/tests
+      - ./.cache/composer:/root/.composer/cache
+      - ./.cache/phpunit:/app/.cache/phpunit
+    entrypoint: "./vendor/bin/phpunit tests"
+
+  checkcs:
+    build:
+      target: phpcs
+    volumes:
+      - ./.cache:/app/.cache
+      - ./src:/app/src
+    entrypoint: "./vendor/bin/phpcs --report=full,source src"
+
+  compat:
+    build:
+      target: phpcs
+    volumes_from:
+      - checkcs
+    entrypoint: "./vendor/bin/phpcs --standard=.phpcompat.xml --report=summary,source src"
+
+  fixcs:
+    build:
+      target: phpcs
+    volumes_from:
+      - checkcs
+    volumes:
+      - ./src:/app/src
+    entrypoint: "./vendor/bin/phpcbf --report=summary,source src"
+
+  composer:
+    build:
+      target: dev-deps
+    volumes:
+      - ./composer.json:/app/composer.json
+      - ./composer.lock:/app/composer.lock
+      - ./vendor:/app/vendor
+      - ./.cache/composer:/root/.composer/cache
+    entrypoint: composer

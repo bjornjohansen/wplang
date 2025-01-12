@@ -1,0 +1,11 @@
+{
+  "require": {
+    "wpackagist-theme/twentytwentyfive": "*"
+  },
+  "extra": {
+    "wordpress-languages": [
+      "nb_NO",
+      "en_GB"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://wpackagist.org",
+      "only": [
+        "wpackagist-plugin/*",
+        "wpackagist-theme/*"
+      ]
+    },
+    {
+      "type": "path",
+      "url": "/app/wplang",
+      "options": {
+        "symlink": false
+      }
+    }
+  ],
+  "require": {
+    "bjornjohansen/wplang": "*@dev"
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true,
+      "bjornjohansen/wplang": true
+    }
+  },
+  "extra": {
+    "wordpress-languages": ["nb_NO"],
+    "wordpress-language-dir": "wp-content/languages"
+  }
+}
