@@ -1,0 +1,10 @@
+{
+  "require": {
+    "johnpbloch/wordpress-core": "*"
+  },
+  "config": {
+    "allow-plugins": {
+      "roots/wordpress-core-installer": true
+    }
+  }
+}
