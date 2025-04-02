@@ -3,56 +3,75 @@
 namespace BJ\Wplang;
 
 use Composer\Composer;
-use Composer\DependencyResolver\Operation\UpdateOperation;
-use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Installer\PackageEvent;
 use Composer\Package\PackageInterface;
+use Composer\EventDispatcher\EventSubscriberInterface;
+use Composer\DependencyResolver\Operation\UpdateOperation;
 
-class Wplang implements PluginInterface, EventSubscriberInterface {
+class Wplang implements PluginInterface, EventSubscriberInterface
+{
 
-	/**
-	 * Array of the languages we are using.
-	 *
-	 * @var array
-	 */
-	protected $languages = [];
+    /**
+     * Array of the languages we are using.
+     *
+     * @var array
+     */
+    protected $languages = [];
 
-	/**
-	 * Full path to the language files target directory.
-	 *
-	 * @var string
-	 */
-	protected $wpLanguageDir = '';
+    /**
+     * Full path to the language files target directory.
+     *
+     * @var string
+     */
+    protected $wpLanguageDir = '';
 
-	/**
-	 * @var Composer
-	 */
-	protected $composer;
+    /**
+     * @var Composer
+     */
+    protected $composer;
 
-	/**
-	 * @var IOInterface
-	 */
-	protected $io;
+    /**
+     * @var IOInterface
+     */
+    protected $io;
 
-	/**
-	 * Composer plugin activation.
-	 */
-	public function activate( Composer $composer, IOInterface $io ) {
-		$this->composer = $composer;
-		$this->io = $io;
+    /**
+     * Subscribe to Composer events.
+     *
+     * @return array The events and callbacks.
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            'post-package-install' => [
+                ['onPackageAction', 0],
+            ],
+            'post-package-update'  => [
+                ['onPackageAction', 0],
+            ],
+        ];
+    }
 
-		$extra = $this->composer->getPackage()->getExtra();
+    /**
+     * Composer plugin activation.
+     */
+    public function activate(Composer $composer, IOInterface $io)
+    {
+        $this->composer = $composer;
+        $this->io       = $io;
 
-		if ( ! empty( $extra['wordpress-languages'] ) ) {
-			$this->languages = $extra['wordpress-languages'];
-		}
+        $extra = $this->composer->getPackage()->getExtra();
 
-		if ( ! empty( $extra['wordpress-language-dir'] ) ) {
-			$this->wpLanguageDir = dirname( __DIR__, 4 ) . '/' . $extra['wordpress-language-dir'];
-		}
-	}
+        if (!empty($extra['wordpress-languages'])) {
+            $this->languages = $extra['wordpress-languages'];
+        }
+
+        if (!empty($extra['wordpress-language-dir'])) {
+            $this->wpLanguageDir = dirname(__DIR__, 4) . '/' . $extra['wordpress-language-dir'];
+        }
+    }
 
     public function deactivate(Composer $composer, IOInterface $io)
     {
@@ -64,83 +83,57 @@ class Wplang implements PluginInterface, EventSubscriberInterface {
         // do nothing
     }
 
-	/**
-	 * Subscribe to Composer events.
-	 *
-	 * @return array The events and callbacks.
-	 */
-	public static function getSubscribedEvents() {
-		return [
-			'post-package-install' => [
-				[ 'onPackageAction', 0 ],
-			],
-			'post-package-update' => [
-				[ 'onPackageAction', 0 ],
-			],
-		];
-	}
-
-	/**
-	 * Our callback for the post-package-install|update events.
-	 *
-	 * @param  PackageEvent $event The package event object.
-	 */
-	public function onPackageAction( PackageEvent $event ) {
+    /**
+     * Our callback for the post-package-install|update events.
+     *
+     * @param PackageEvent $event The package event object.
+     */
+    public function onPackageAction(PackageEvent $event)
+    {
         if ($event->getOperation() instanceof UpdateOperation) {
             $package = $event->getOperation()->getTargetPackage();
         } else {
             $package = $event->getOperation()->getPackage();
         }
-		$this->getTranslations( $package );
-	}
+        $this->getTranslations($package);
+    }
 
-	/**
-	 * Get translations for a package, where applicable.
-	 *
-	 * @param PackageInterface $package
-	 */
-	protected function getTranslations( PackageInterface $package ) {
+    /**
+     * Get translations for a package, where applicable.
+     *
+     * @param PackageInterface $package
+     */
+    protected function getTranslations(PackageInterface $package)
+    {
+        try {
+            [$provider, $name] = explode('/', $package->getName(), 2);
 
-		try {
+            $type = $package->getType();
 
-			$t = new \stdClass();
+            if ($type === 'wordpress-plugin') {
+                $t = new Translatable('plugin', $name, $package->getVersion(), $this->languages, $this->wpLanguageDir);
+            } elseif ($type === 'wordpress-theme') {
+                $t = new Translatable('theme', $name, $package->getVersion(), $this->languages, $this->wpLanguageDir);
+            } elseif (array_key_exists('wordpress/core-implementation', $package->getProvides())) {
+                $t = new Translatable('core', $name, $package->getVersion(), $this->languages, $this->wpLanguageDir);
+            } else {
+                return;
+            }
 
-			list( $provider, $name ) = explode( '/', $package->getName(), 2 );
+            $results = $t->fetch();
 
-			switch ( $package->getType() ) {
-				case 'wordpress-plugin':
-					$t = new Translatable( 'plugin', $name, $package->getVersion(), $this->languages, $this->wpLanguageDir );
-					break;
-				case 'wordpress-theme':
-					$t = new Translatable( 'theme', $name, $package->getVersion(), $this->languages, $this->wpLanguageDir );
-					break;
-				case 'package':
-					if ( 'johnpbloch' === $provider && 'wordpress' === $name ) {
-						$t = new Translatable( 'core', $name, $package->getVersion(), $this->languages, $this->wpLanguageDir );
-					}
-					break;
+            if (empty($results)) {
+                $this->io->write('      - ' . sprintf('No translations updated for %s', $package->getName()));
 
-				default:
-					break;
-			}
+                return;
+            }
 
-			if ( is_a( $t, __NAMESPACE__ . '\Translatable' ) ) {
-
-				$results = $t->fetch();
-
-				if ( empty( $results ) ) {
-					$this->io->write( '      - ' . sprintf( 'No translations updated for %s', $package->getName() ) );
-				} else {
-					foreach ( $results as $result ) {
-						$this->io->write( '      - ' . sprintf( 'Updated translation to %1$s for %2$s', $result, $package->getName() ) );
-					}
-				}
-			}
-		} catch ( \Exception $e ) {
-			$this->io->writeError( '      - ' . $e->getMessage() );
-		}
-
-	}
+            foreach ($results as $result) {
+                $this->io->write('      - ' . sprintf('Updated translation to %1$s for %2$s', $result, $package->getName()));
+            }
+        } catch (\Exception $e) {
+            $this->io->writeError('      - ' . $e->getMessage());
+        }
+    }
 
 }
-
